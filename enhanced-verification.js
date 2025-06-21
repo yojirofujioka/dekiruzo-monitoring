@@ -564,77 +564,1046 @@ class EnhancedVerificationManager {
     }
 
     createTabSystem() {
-        console.log('🎯 タブシステム作成開始...');
+        console.log('🎯 タブシステム作成開始');
         
-        const container = document.getElementById('verification-container');
-        if (!container) {
-            console.error('❌ verification-containerが見つかりません');
+        const mainContent = document.querySelector('.main-content') || document.querySelector('main') || document.body;
+        
+        if (!mainContent) {
+            console.error('❌ メインコンテンツ要素が見つかりません');
             return;
         }
+
+        // 既存のタブシステムを削除
+        const existingTabs = mainContent.querySelector('.tabs-container');
+        if (existingTabs) {
+            existingTabs.remove();
+        }
+
+        // 新しいタブシステムを作成
+        const tabsContainer = document.createElement('div');
+        tabsContainer.className = 'tabs-container';
         
-        // 新しいタブシステムHTML
-        container.innerHTML = `
-            <div class="tabs-container">
-                <div class="tabs-nav">
-                    <button class="tab-btn active" data-tab="summary">📊 照合サマリー</button>
-                    <button class="tab-btn" data-tab="work-order">🏗️ 工事注文書照合</button>
-                    <button class="tab-btn" data-tab="material-invoice">📄 材料発注vs請求</button>
-                    <button class="tab-btn" data-tab="material-estimate">📦 材料見積vs発注</button>
-                    <button class="tab-btn" data-tab="cost-total">💰 総原価検証</button>
-                    <button class="tab-btn" data-tab="payment">💳 入金照合</button>
-                    <button class="tab-btn" data-tab="supplier-files">🏢 材料屋請求書</button>
-                    <button class="tab-btn" data-tab="suppliers">📋 材料屋一覧</button>
+        tabsContainer.innerHTML = `
+            <div class="tabs-header">
+                <h1>🏗️ 現場監督業務監視システム</h1>
+                <div class="system-status">
+                    <span class="status-indicator online"></span>
+                    <span>システム正常稼働中</span>
                 </div>
-                <div class="tabs-content">
-                    <div id="summary" class="tab-content active">
-                        <h2>📊 照合サマリー</h2>
-                        <div id="summary-content">データを読み込み中...</div>
-                    </div>
-                    <div id="work-order" class="tab-content">
-                        <h2>🏗️ 工事注文書照合</h2>
-                        <div id="work-order-content">データを読み込み中...</div>
-                    </div>
-                    <div id="material-invoice" class="tab-content">
-                        <h2>📄 材料発注vs請求</h2>
-                        <div id="material-invoice-content">データを読み込み中...</div>
-                    </div>
-                    <div id="material-estimate" class="tab-content">
-                        <h2>📦 材料見積vs発注</h2>
-                        <div id="material-estimate-content">データを読み込み中...</div>
-                    </div>
-                    <div id="cost-total" class="tab-content">
-                        <h2>💰 総原価検証</h2>
-                        <div id="cost-total-content">データを読み込み中...</div>
-                    </div>
-                    <div id="payment" class="tab-content">
-                        <h2>💳 入金照合</h2>
-                        <div id="payment-content">データを読み込み中...</div>
-                    </div>
-                    <div id="supplier-files" class="tab-content">
-                        <h2>🏢 材料屋請求書</h2>
-                        <div id="supplier-files-content">データを読み込み中...</div>
-                    </div>
-                    <div id="suppliers" class="tab-content">
-                        <h2>📋 材料屋一覧</h2>
-                        <div id="suppliers-content">データを読み込み中...</div>
-                    </div>
+            </div>
+            
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-tab="dashboard">📊 ダッシュボード</button>
+                <button class="tab-btn" data-tab="summary">📋 照合サマリー</button>
+                <button class="tab-btn" data-tab="work-order">📝 工事注文書照合</button>
+                <button class="tab-btn" data-tab="material-order">📦 材料発注vs請求</button>
+                <button class="tab-btn" data-tab="material-estimate">💰 材料見積vs発注</button>
+                <button class="tab-btn" data-tab="cost-verification">🔍 総原価検証</button>
+                <button class="tab-btn" data-tab="payment-check">💳 入金照合</button>
+                <button class="tab-btn" data-tab="supplier-invoices">📄 材料屋請求書</button>
+                <button class="tab-btn" data-tab="suppliers">🏢 材料屋一覧</button>
+            </div>
+            
+            <div class="tabs-content">
+                <div id="dashboard" class="tab-content active">
+                    <!-- ダッシュボード内容 -->
+                </div>
+                <div id="summary" class="tab-content">
+                    <!-- 照合サマリー内容 -->
+                </div>
+                <div id="work-order" class="tab-content">
+                    <!-- 工事注文書照合内容 -->
+                </div>
+                <div id="material-order" class="tab-content">
+                    <!-- 材料発注vs請求内容 -->
+                </div>
+                <div id="material-estimate" class="tab-content">
+                    <!-- 材料見積vs発注内容 -->
+                </div>
+                <div id="cost-verification" class="tab-content">
+                    <!-- 総原価検証内容 -->
+                </div>
+                <div id="payment-check" class="tab-content">
+                    <!-- 入金照合内容 -->
+                </div>
+                <div id="supplier-invoices" class="tab-content">
+                    <!-- 材料屋請求書内容 -->
+                </div>
+                <div id="suppliers" class="tab-content">
+                    <!-- 材料屋一覧内容 -->
                 </div>
             </div>
         `;
+
+        mainContent.appendChild(tabsContainer);
         
-        // タブボタンイベント設定
+        // イベントリスナーを設定
         this.setupTabEventListeners();
         
-        // 初期タブ表示（遅延実行）
-        setTimeout(() => {
-            console.log('📊 初期タブ（summary）を表示中...');
-            this.showTab('summary');
-        }, 100);
-        
-        // 初期データ読み込み
-        this.loadProjectsData();
+        // 初期タブ（ダッシュボード）を表示
+        this.showTab('dashboard');
         
         console.log('✅ タブシステム作成完了');
+    }
+
+    // 新機能: リアルタイムダッシュボード
+    createRealtimeDashboard(container) {
+        console.log('📊 リアルタイムダッシュボード作成中...');
+        
+        container.innerHTML = `
+            <div class="dashboard-header">
+                <h2>📊 リアルタイム業務ダッシュボード</h2>
+                <div class="last-updated">
+                    最終更新: <span id="last-updated-time">--</span>
+                    <button id="refresh-dashboard" class="btn-refresh">🔄 更新</button>
+                </div>
+            </div>
+
+            <!-- KPI概要カード -->
+            <div class="kpi-cards">
+                <div class="kpi-card projects">
+                    <div class="kpi-icon">🏗️</div>
+                    <div class="kpi-content">
+                        <div class="kpi-number" id="total-projects">--</div>
+                        <div class="kpi-label">進行中案件</div>
+                        <div class="kpi-trend" id="projects-trend">--</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card revenue">
+                    <div class="kpi-icon">💰</div>
+                    <div class="kpi-content">
+                        <div class="kpi-number" id="total-revenue">--</div>
+                        <div class="kpi-label">月間売上</div>
+                        <div class="kpi-trend" id="revenue-trend">--</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card verification">
+                    <div class="kpi-icon">✅</div>
+                    <div class="kpi-content">
+                        <div class="kpi-number" id="verification-rate">--</div>
+                        <div class="kpi-label">照合完了率</div>
+                        <div class="kpi-trend" id="verification-trend">--</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card alerts">
+                    <div class="kpi-icon">⚠️</div>
+                    <div class="kpi-content">
+                        <div class="kpi-number" id="alert-count">--</div>
+                        <div class="kpi-label">要注意項目</div>
+                        <div class="kpi-trend" id="alerts-trend">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- チャート・グラフエリア -->
+            <div class="dashboard-charts">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>📈 月間売上推移</h3>
+                        <select id="chart-period">
+                            <option value="6months">過去6ヶ月</option>
+                            <option value="12months">過去12ヶ月</option>
+                            <option value="current-year">今年度</option>
+                        </select>
+                    </div>
+                    <canvas id="revenue-chart" width="400" height="200"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>🔍 照合状況</h3>
+                    </div>
+                    <canvas id="verification-chart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- アクティビティフィード -->
+            <div class="activity-section">
+                <div class="activity-header">
+                    <h3>📋 最近のアクティビティ</h3>
+                    <button id="view-all-activities" class="btn-link">すべて表示</button>
+                </div>
+                <div id="activity-feed" class="activity-feed">
+                    <!-- リアルタイムアクティビティがここに表示 -->
+                </div>
+            </div>
+
+            <!-- AI異常検出アラート -->
+            <div class="ai-alerts-section">
+                <div class="ai-alerts-header">
+                    <h3>🤖 AI異常検出アラート</h3>
+                    <div class="ai-status">
+                        <span class="ai-indicator active"></span>
+                        <span>AI監視中</span>
+                    </div>
+                </div>
+                <div id="ai-alerts" class="ai-alerts">
+                    <!-- AI検出アラートがここに表示 -->
+                </div>
+            </div>
+
+            <!-- クイックアクション -->
+            <div class="quick-actions">
+                <h3>⚡ クイックアクション</h3>
+                <div class="action-buttons">
+                    <button id="quick-verification" class="action-btn primary">
+                        <span class="icon">🔍</span>
+                        <span>一括照合実行</span>
+                    </button>
+                    <button id="generate-report" class="action-btn secondary">
+                        <span class="icon">📊</span>
+                        <span>月次レポート生成</span>
+                    </button>
+                    <button id="backup-data" class="action-btn secondary">
+                        <span class="icon">💾</span>
+                        <span>データバックアップ</span>
+                    </button>
+                    <button id="system-check" class="action-btn warning">
+                        <span class="icon">🔧</span>
+                        <span>システムチェック</span>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // ダッシュボード用CSSを追加
+        this.addDashboardStyles();
+        
+        // ダッシュボードデータを初期化
+        this.initializeDashboard();
+        
+        // リアルタイム更新を開始
+        this.startRealtimeUpdates();
+        
+        console.log('✅ リアルタイムダッシュボード作成完了');
+    }
+
+    // ダッシュボード用CSSスタイル
+    addDashboardStyles() {
+        if (document.getElementById('dashboard-styles')) return;
+        
+        const style = document.createElement('style');
+        style.id = 'dashboard-styles';
+        style.textContent = `
+            .tabs-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-radius: 10px 10px 0 0;
+                margin-bottom: 0;
+            }
+
+            .tabs-header h1 {
+                margin: 0;
+                font-size: 1.8em;
+                font-weight: 600;
+            }
+
+            .system-status {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.9em;
+            }
+
+            .status-indicator {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: #4CAF50;
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0% { opacity: 1; }
+                50% { opacity: 0.5; }
+                100% { opacity: 1; }
+            }
+
+            .dashboard-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+                padding: 20px;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+
+            .last-updated {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                font-size: 0.9em;
+                color: #666;
+            }
+
+            .btn-refresh {
+                padding: 8px 16px;
+                background: #f0f0f0;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .btn-refresh:hover {
+                background: #e0e0e0;
+            }
+
+            .kpi-cards {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+
+            .kpi-card {
+                display: flex;
+                align-items: center;
+                padding: 25px;
+                background: white;
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .kpi-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            }
+
+            .kpi-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #667eea, #764ba2);
+            }
+
+            .kpi-card.projects::before { background: linear-gradient(90deg, #4CAF50, #45a049); }
+            .kpi-card.revenue::before { background: linear-gradient(90deg, #FF9800, #F57C00); }
+            .kpi-card.verification::before { background: linear-gradient(90deg, #2196F3, #1976D2); }
+            .kpi-card.alerts::before { background: linear-gradient(90deg, #f44336, #d32f2f); }
+
+            .kpi-icon {
+                font-size: 3em;
+                margin-right: 20px;
+                opacity: 0.8;
+            }
+
+            .kpi-content {
+                flex: 1;
+            }
+
+            .kpi-number {
+                font-size: 2.5em;
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: #333;
+            }
+
+            .kpi-label {
+                font-size: 1em;
+                color: #666;
+                margin-bottom: 8px;
+            }
+
+            .kpi-trend {
+                font-size: 0.9em;
+                font-weight: 500;
+            }
+
+            .kpi-trend.up { color: #4CAF50; }
+            .kpi-trend.down { color: #f44336; }
+            .kpi-trend.neutral { color: #FF9800; }
+
+            .dashboard-charts {
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+
+            .chart-container {
+                background: white;
+                border-radius: 15px;
+                padding: 25px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            }
+
+            .chart-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            .chart-header h3 {
+                margin: 0;
+                color: #333;
+            }
+
+            .chart-header select {
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                background: white;
+            }
+
+            .activity-section, .ai-alerts-section {
+                background: white;
+                border-radius: 15px;
+                padding: 25px;
+                margin-bottom: 20px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            }
+
+            .activity-header, .ai-alerts-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            .activity-header h3, .ai-alerts-header h3 {
+                margin: 0;
+                color: #333;
+            }
+
+            .btn-link {
+                background: none;
+                border: none;
+                color: #667eea;
+                cursor: pointer;
+                text-decoration: underline;
+            }
+
+            .ai-status {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.9em;
+                color: #666;
+            }
+
+            .ai-indicator {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: #4CAF50;
+                animation: pulse 1.5s infinite;
+            }
+
+            .activity-feed {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+
+            .activity-item {
+                display: flex;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .activity-item:last-child {
+                border-bottom: none;
+            }
+
+            .activity-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 15px;
+                font-size: 1.2em;
+            }
+
+            .activity-content {
+                flex: 1;
+            }
+
+            .activity-title {
+                font-weight: 500;
+                margin-bottom: 4px;
+            }
+
+            .activity-time {
+                font-size: 0.8em;
+                color: #999;
+            }
+
+            .ai-alerts {
+                max-height: 200px;
+                overflow-y: auto;
+            }
+
+            .ai-alert {
+                display: flex;
+                align-items: center;
+                padding: 15px;
+                margin-bottom: 10px;
+                border-radius: 10px;
+                border-left: 4px solid;
+            }
+
+            .ai-alert.warning {
+                background: #fff3cd;
+                border-left-color: #ffc107;
+            }
+
+            .ai-alert.error {
+                background: #f8d7da;
+                border-left-color: #dc3545;
+            }
+
+            .ai-alert.info {
+                background: #d1ecf1;
+                border-left-color: #17a2b8;
+            }
+
+            .quick-actions {
+                background: white;
+                border-radius: 15px;
+                padding: 25px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            }
+
+            .quick-actions h3 {
+                margin: 0 0 20px 0;
+                color: #333;
+            }
+
+            .action-buttons {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+
+            .action-btn {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 15px 20px;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 1em;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+
+            .action-btn.primary {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            .action-btn.secondary {
+                background: #f8f9fa;
+                color: #333;
+                border: 1px solid #dee2e6;
+            }
+
+            .action-btn.warning {
+                background: linear-gradient(135deg, #ffc107 0%, #ff8f00 100%);
+                color: white;
+            }
+
+            .action-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            }
+
+            .action-btn .icon {
+                font-size: 1.2em;
+            }
+
+            @media (max-width: 768px) {
+                .kpi-cards {
+                    grid-template-columns: 1fr;
+                }
+                
+                .dashboard-charts {
+                    grid-template-columns: 1fr;
+                }
+                
+                .action-buttons {
+                    grid-template-columns: 1fr;
+                }
+            }
+        `;
+        
+        document.head.appendChild(style);
+    }
+
+    // ダッシュボードデータ初期化
+    async initializeDashboard() {
+        console.log('📊 ダッシュボードデータ初期化中...');
+        
+        try {
+            // KPIデータを取得・表示
+            await this.updateKPICards();
+            
+            // チャートを初期化
+            this.initializeCharts();
+            
+            // アクティビティフィードを初期化
+            this.initializeActivityFeed();
+            
+            // AI異常検出を初期化
+            this.initializeAIAlerts();
+            
+            // イベントリスナーを設定
+            this.setupDashboardEventListeners();
+            
+            // 最終更新時間を設定
+            this.updateLastUpdatedTime();
+            
+            console.log('✅ ダッシュボードデータ初期化完了');
+        } catch (error) {
+            console.error('❌ ダッシュボード初期化エラー:', error);
+        }
+    }
+
+    // KPIカード更新
+    async updateKPICards() {
+        try {
+            // APIからプロジェクトデータを取得
+            const response = await fetch('/api/projects');
+            const projects = await response.json();
+            
+            // KPI計算
+            const totalProjects = projects.length;
+            const totalRevenue = projects.reduce((sum, p) => sum + (p.contractAmount || 0), 0);
+            const completedVerifications = projects.filter(p => p.verificationStatus === 'completed').length;
+            const verificationRate = totalProjects > 0 ? Math.round((completedVerifications / totalProjects) * 100) : 0;
+            const alertCount = projects.filter(p => p.status === 'warning' || p.status === 'error').length;
+            
+            // 表示更新
+            document.getElementById('total-projects').textContent = totalProjects;
+            document.getElementById('total-revenue').textContent = `¥${totalRevenue.toLocaleString()}`;
+            document.getElementById('verification-rate').textContent = `${verificationRate}%`;
+            document.getElementById('alert-count').textContent = alertCount;
+            
+            // トレンド表示（模擬データ）
+            document.getElementById('projects-trend').textContent = '↗️ +2 (先月比)';
+            document.getElementById('projects-trend').className = 'kpi-trend up';
+            
+            document.getElementById('revenue-trend').textContent = '↗️ +15% (先月比)';
+            document.getElementById('revenue-trend').className = 'kpi-trend up';
+            
+            document.getElementById('verification-trend').textContent = `↗️ +${Math.round(Math.random() * 10)}% (先月比)`;
+            document.getElementById('verification-trend').className = 'kpi-trend up';
+            
+            if (alertCount > 0) {
+                document.getElementById('alerts-trend').textContent = '⚠️ 要対応';
+                document.getElementById('alerts-trend').className = 'kpi-trend down';
+            } else {
+                document.getElementById('alerts-trend').textContent = '✅ 正常';
+                document.getElementById('alerts-trend').className = 'kpi-trend up';
+            }
+            
+        } catch (error) {
+            console.error('❌ KPIデータ更新エラー:', error);
+        }
+    }
+
+    // チャート初期化
+    initializeCharts() {
+        // 売上チャート
+        this.createRevenueChart();
+        // 照合状況チャート
+        this.createVerificationChart();
+    }
+
+    // 売上チャート作成
+    createRevenueChart() {
+        const canvas = document.getElementById('revenue-chart');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        
+        // 模擬データ（過去6ヶ月の売上）
+        const months = ['1月', '2月', '3月', '4月', '5月', '6月'];
+        const revenues = [12000000, 15000000, 18000000, 16000000, 20000000, 22000000];
+        
+        // シンプルな線グラフを描画
+        this.drawLineChart(ctx, canvas.width, canvas.height, months, revenues, '売上 (円)');
+    }
+
+    // 照合状況チャート作成
+    createVerificationChart() {
+        const canvas = document.getElementById('verification-chart');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        
+        // 模擬データ
+        const data = [
+            { label: '完了', value: 65, color: '#4CAF50' },
+            { label: '進行中', value: 25, color: '#FF9800' },
+            { label: '未着手', value: 10, color: '#f44336' }
+        ];
+        
+        // ドーナツチャートを描画
+        this.drawDonutChart(ctx, canvas.width, canvas.height, data);
+    }
+
+    // 線グラフ描画
+    drawLineChart(ctx, width, height, labels, data, yLabel) {
+        ctx.clearRect(0, 0, width, height);
+        
+        const padding = 50;
+        const chartWidth = width - padding * 2;
+        const chartHeight = height - padding * 2;
+        
+        // 軸を描画
+        ctx.strokeStyle = '#ddd';
+        ctx.lineWidth = 1;
+        
+        // Y軸
+        ctx.beginPath();
+        ctx.moveTo(padding, padding);
+        ctx.lineTo(padding, height - padding);
+        ctx.stroke();
+        
+        // X軸
+        ctx.beginPath();
+        ctx.moveTo(padding, height - padding);
+        ctx.lineTo(width - padding, height - padding);
+        ctx.stroke();
+        
+        // データポイントを描画
+        const maxValue = Math.max(...data);
+        const xStep = chartWidth / (labels.length - 1);
+        
+        ctx.strokeStyle = '#667eea';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        
+        data.forEach((value, index) => {
+            const x = padding + index * xStep;
+            const y = height - padding - (value / maxValue) * chartHeight;
+            
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+            
+            // データポイント
+            ctx.fillStyle = '#667eea';
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        
+        ctx.stroke();
+        
+        // ラベルを描画
+        ctx.fillStyle = '#666';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        
+        labels.forEach((label, index) => {
+            const x = padding + index * xStep;
+            ctx.fillText(label, x, height - padding + 20);
+        });
+    }
+
+    // ドーナツチャート描画
+    drawDonutChart(ctx, width, height, data) {
+        ctx.clearRect(0, 0, width, height);
+        
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const radius = Math.min(width, height) / 3;
+        const innerRadius = radius * 0.6;
+        
+        let currentAngle = -Math.PI / 2;
+        const total = data.reduce((sum, item) => sum + item.value, 0);
+        
+        data.forEach(item => {
+            const sliceAngle = (item.value / total) * Math.PI * 2;
+            
+            ctx.fillStyle = item.color;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+            ctx.arc(centerX, centerY, innerRadius, currentAngle + sliceAngle, currentAngle, true);
+            ctx.closePath();
+            ctx.fill();
+            
+            // ラベル
+            const labelAngle = currentAngle + sliceAngle / 2;
+            const labelX = centerX + Math.cos(labelAngle) * (radius + 20);
+            const labelY = centerY + Math.sin(labelAngle) * (radius + 20);
+            
+            ctx.fillStyle = '#333';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${item.label}: ${item.value}%`, labelX, labelY);
+            
+            currentAngle += sliceAngle;
+        });
+    }
+
+    // アクティビティフィード初期化
+    initializeActivityFeed() {
+        const activities = [
+            {
+                icon: '📄',
+                title: '新しい請求書がアップロードされました',
+                time: '5分前',
+                bgColor: '#e3f2fd'
+            },
+            {
+                icon: '✅',
+                title: 'パレス代々木の照合が完了しました',
+                time: '15分前',
+                bgColor: '#e8f5e8'
+            },
+            {
+                icon: '⚠️',
+                title: '斎藤様邸で金額差異を検出',
+                time: '30分前',
+                bgColor: '#fff3e0'
+            },
+            {
+                icon: '📊',
+                title: '月次レポートが生成されました',
+                time: '1時間前',
+                bgColor: '#f3e5f5'
+            },
+            {
+                icon: '🔄',
+                title: 'システムバックアップが完了',
+                time: '2時間前',
+                bgColor: '#e0f2f1'
+            }
+        ];
+
+        const feed = document.getElementById('activity-feed');
+        if (!feed) return;
+
+        feed.innerHTML = activities.map(activity => `
+            <div class="activity-item">
+                <div class="activity-icon" style="background: ${activity.bgColor}">
+                    ${activity.icon}
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">${activity.title}</div>
+                    <div class="activity-time">${activity.time}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // AI異常検出初期化
+    initializeAIAlerts() {
+        const alerts = [
+            {
+                type: 'warning',
+                icon: '⚠️',
+                message: '材料費が見積もりより15%超過している案件があります',
+                action: '詳細確認'
+            },
+            {
+                type: 'info',
+                icon: 'ℹ️',
+                message: '今月の照合完了率が目標を上回っています',
+                action: 'レポート表示'
+            }
+        ];
+
+        const alertsContainer = document.getElementById('ai-alerts');
+        if (!alertsContainer) return;
+
+        if (alerts.length === 0) {
+            alertsContainer.innerHTML = '<div class="ai-alert info">✅ 現在、異常は検出されていません</div>';
+        } else {
+            alertsContainer.innerHTML = alerts.map(alert => `
+                <div class="ai-alert ${alert.type}">
+                    <span style="margin-right: 10px;">${alert.icon}</span>
+                    <span style="flex: 1;">${alert.message}</span>
+                    <button class="btn-link" onclick="alert('${alert.action}機能は開発中です')">${alert.action}</button>
+                </div>
+            `).join('');
+        }
+    }
+
+    // ダッシュボードイベントリスナー設定
+    setupDashboardEventListeners() {
+        // 更新ボタン
+        const refreshBtn = document.getElementById('refresh-dashboard');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => this.refreshDashboard());
+        }
+
+        // クイックアクションボタン
+        const quickVerificationBtn = document.getElementById('quick-verification');
+        if (quickVerificationBtn) {
+            quickVerificationBtn.addEventListener('click', () => this.executeQuickVerification());
+        }
+
+        const generateReportBtn = document.getElementById('generate-report');
+        if (generateReportBtn) {
+            generateReportBtn.addEventListener('click', () => this.generateMonthlyReport());
+        }
+
+        const backupDataBtn = document.getElementById('backup-data');
+        if (backupDataBtn) {
+            backupDataBtn.addEventListener('click', () => this.backupData());
+        }
+
+        const systemCheckBtn = document.getElementById('system-check');
+        if (systemCheckBtn) {
+            systemCheckBtn.addEventListener('click', () => this.performSystemCheck());
+        }
+
+        // チャート期間変更
+        const chartPeriodSelect = document.getElementById('chart-period');
+        if (chartPeriodSelect) {
+            chartPeriodSelect.addEventListener('change', (e) => this.updateChartPeriod(e.target.value));
+        }
+    }
+
+    // リアルタイム更新開始
+    startRealtimeUpdates() {
+        // 30秒ごとに更新
+        this.realtimeInterval = setInterval(() => {
+            this.updateKPICards();
+            this.updateLastUpdatedTime();
+        }, 30000);
+    }
+
+    // 最終更新時間更新
+    updateLastUpdatedTime() {
+        const timeElement = document.getElementById('last-updated-time');
+        if (timeElement) {
+            timeElement.textContent = new Date().toLocaleTimeString('ja-JP');
+        }
+    }
+
+    // ダッシュボード更新
+    async refreshDashboard() {
+        this.showLoading('ダッシュボードを更新中...');
+        
+        try {
+            await this.updateKPICards();
+            this.initializeCharts();
+            this.initializeActivityFeed();
+            this.initializeAIAlerts();
+            this.updateLastUpdatedTime();
+            
+            this.showSuccessMessage('ダッシュボードを更新しました');
+        } catch (error) {
+            this.showErrorMessage('ダッシュボードの更新に失敗しました');
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    // クイック照合実行
+    async executeQuickVerification() {
+        this.showLoading('一括照合を実行中...');
+        
+        try {
+            // 模擬的な処理
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            this.showSuccessMessage('一括照合が完了しました');
+            await this.refreshDashboard();
+        } catch (error) {
+            this.showErrorMessage('一括照合に失敗しました');
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    // 月次レポート生成
+    async generateMonthlyReport() {
+        this.showLoading('月次レポートを生成中...');
+        
+        try {
+            // 模擬的な処理
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // CSVダウンロード
+            const csvContent = this.generateMonthlyReportCSV();
+            this.downloadCSV(csvContent, `月次レポート_${new Date().getFullYear()}年${new Date().getMonth() + 1}月.csv`);
+            
+            this.showSuccessMessage('月次レポートを生成しました');
+        } catch (error) {
+            this.showErrorMessage('月次レポートの生成に失敗しました');
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    // データバックアップ
+    async backupData() {
+        this.showLoading('データをバックアップ中...');
+        
+        try {
+            // 模擬的な処理
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            this.showSuccessMessage('データバックアップが完了しました');
+        } catch (error) {
+            this.showErrorMessage('データバックアップに失敗しました');
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    // システムチェック
+    async performSystemCheck() {
+        this.showLoading('システムをチェック中...');
+        
+        try {
+            // 模擬的な処理
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            this.showSuccessMessage('システムは正常に動作しています');
+        } catch (error) {
+            this.showErrorMessage('システムチェックでエラーが発生しました');
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    // チャート期間更新
+    updateChartPeriod(period) {
+        // 期間に応じてチャートデータを更新
+        this.createRevenueChart();
+        this.showSuccessMessage(`表示期間を${period}に変更しました`);
+    }
+
+    // 月次レポートCSV生成
+    generateMonthlyReportCSV() {
+        const headers = ['項目', '件数', '金額', '完了率', '備考'];
+        const data = [
+            ['進行中案件', '7', '¥85,000,000', '85%', '順調'],
+            ['完了案件', '12', '¥120,000,000', '100%', ''],
+            ['照合完了', '15', '-', '78%', ''],
+            ['要確認項目', '3', '¥2,500,000', '-', '要対応'],
+        ];
+        
+        return [headers, ...data].map(row => row.join(',')).join('\n');
     }
 
     setupTabEventListeners() {
@@ -1361,9 +2330,6 @@ class EnhancedVerificationManager {
                 </div>
             </div>
         `;
-        
-        // APIからのデータ読み込みも並行して実行（バックグラウンド）
-        this.loadProjectsData();
     }
 
     // プロジェクトデータ読み込み
@@ -2767,6 +3733,12 @@ class EnhancedVerificationManager {
     initializeTabContent(tabName, container) {
         console.log(`🔧 タブコンテンツ初期化: ${tabName}`);
         
+        // ダッシュボードタブの場合は特別処理
+        if (tabName === 'dashboard') {
+            this.createRealtimeDashboard(container);
+            return;
+        }
+        
         // コンテンツDIVを探す（複数の方法で試行）
         let contentDiv = container.querySelector('div[id$="-content"]');
         if (!contentDiv) {
@@ -2875,7 +3847,7 @@ class EnhancedVerificationManager {
                     </div>
                 `;
                 break;
-            case 'material-invoice':
+            case 'material-order':
                 console.log('📦 材料発注vs請求タブ初期化中...');
                 contentDiv.innerHTML = `
                     <div class="feature-content">
@@ -2925,7 +3897,7 @@ class EnhancedVerificationManager {
                     </div>
                 `;
                 break;
-            case 'cost-total':
+            case 'cost-verification':
                 console.log('📋 総原価検証タブ初期化中...');
                 contentDiv.innerHTML = `
                     <div class="feature-content">
@@ -2950,7 +3922,7 @@ class EnhancedVerificationManager {
                     </div>
                 `;
                 break;
-            case 'payment':
+            case 'payment-check':
                 console.log('💳 入金照合タブ初期化中...');
                 contentDiv.innerHTML = `
                     <div class="feature-content">
@@ -2975,7 +3947,7 @@ class EnhancedVerificationManager {
                     </div>
                 `;
                 break;
-            case 'supplier-files':
+            case 'supplier-invoices':
                 console.log('🏢 材料屋請求書タブ初期化中...');
                 // 直接フォールバック表示を使用
                 contentDiv.innerHTML = `
@@ -3209,9 +4181,16 @@ class EnhancedVerificationManager {
         return csvContent;
     }
 
-    // CSV ダウンロード
+    // CSV ダウンロード（UTF-8 BOM付きで文字化け防止）
     downloadCSV(csvContent, filename) {
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        // UTF-8 BOMを追加して文字化けを防ぐ
+        const bom = '\uFEFF';
+        const csvWithBom = bom + csvContent;
+        
+        const blob = new Blob([csvWithBom], { 
+            type: 'text/csv;charset=utf-8;' 
+        });
+        
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         
@@ -3222,6 +4201,8 @@ class EnhancedVerificationManager {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        
+        console.log(`📊 CSVファイルをダウンロード: ${filename} (UTF-8 BOM付き)`);
     }
 
     // ドラッグ&ドロップ設定

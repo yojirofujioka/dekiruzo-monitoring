@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>現場監督業務監視システム</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="search-filter.css">
 </head>
 <body>
     <div class="container">
@@ -14,6 +15,7 @@
                 <span id="total-projects">案件数: 0件</span>
                 <span id="alert-count">要確認: 0件</span>
                 <span id="last-update">最終更新: --</span>
+                <a href="dashboard.html" class="dashboard-link">📊 ダッシュボード</a>
             </div>
         </header>
 
@@ -43,6 +45,9 @@
     <script src="data.js"></script>
     <script src="csv-parser.js"></script>
     <script src="api-client.js"></script>
+    <script src="websocket-client.js"></script>
+    <script src="search-filter.js"></script>
+    <script src="export-manager.js"></script>
     <script src="enhanced-verification.js"></script>
 </body>
 </html> 

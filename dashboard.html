@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ダッシュボード - 現場監督業務監視システム</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 ダッシュボード</h1>
+            <button class="btn-back" onclick="window.location.href='index.html'">← メインページに戻る</button>
+        </header>
+
+        <div class="dashboard-controls">
+            <div class="period-selector">
+                <label>期間選択：</label>
+                <select id="periodSelect">
+                    <option value="today">本日</option>
+                    <option value="week">今週</option>
+                    <option value="month" selected>今月</option>
+                    <option value="quarter">四半期</option>
+                    <option value="year">年間</option>
+                </select>
+            </div>
+            <button class="btn-refresh" onclick="refreshDashboard()">🔄 更新</button>
+        </div>
+
+        <div class="kpi-cards">
+            <div class="kpi-card">
+                <div class="kpi-icon">🏗️</div>
+                <div class="kpi-content">
+                    <h3>進行中案件数</h3>
+                    <div class="kpi-value" id="activeProjects">-</div>
+                    <div class="kpi-change positive">+12%</div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon">💰</div>
+                <div class="kpi-content">
+                    <h3>総売上高</h3>
+                    <div class="kpi-value" id="totalRevenue">-</div>
+                    <div class="kpi-change positive">+8.5%</div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon">📈</div>
+                <div class="kpi-content">
+                    <h3>利益率</h3>
+                    <div class="kpi-value" id="profitMargin">-</div>
+                    <div class="kpi-change negative">-2.1%</div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon">⚠️</div>
+                <div class="kpi-content">
+                    <h3>要対応案件</h3>
+                    <div class="kpi-value" id="pendingIssues">-</div>
+                    <div class="kpi-change">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-wrapper">
+                <h3>月別売上推移</h3>
+                <canvas id="revenueChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <h3>案件ステータス分布</h3>
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-wrapper">
+                <h3>工事種別別売上</h3>
+                <canvas id="categoryChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <h3>支払状況</h3>
+                <canvas id="paymentChart"></canvas>
+            </div>
+        </div>
+
+        <div class="recent-activities">
+            <h3>📋 最近の活動</h3>
+            <div id="activityList" class="activity-list">
+                <div class="activity-item">
+                    <span class="activity-time">10分前</span>
+                    <span class="activity-text">工事注文書照合が完了しました（案件: T2024-001）</span>
+                </div>
+                <div class="activity-item">
+                    <span class="activity-time">1時間前</span>
+                    <span class="activity-text">新規材料発注が登録されました（金額: ¥1,250,000）</span>
+                </div>
+                <div class="activity-item">
+                    <span class="activity-time">3時間前</span>
+                    <span class="activity-text">請求書がアップロードされました（山田建材）</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="websocket-client.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

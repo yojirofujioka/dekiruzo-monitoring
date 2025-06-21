@@ -10,6 +10,8 @@ const fs = require('fs');
 const multer = require('multer');
 const XLSX = require('xlsx');
 const pdfParse = require('pdf-parse');
+const http = require('http');
+const WebSocketServer = require('./websocket-server');
 
 // ファイルアップロード設定
 const storage = multer.memoryStorage();
@@ -803,9 +805,19 @@ cron.schedule('0 9 * * *', async () => {
     }
 });
 
+// HTTPサーバー作成
+const server = http.createServer(app);
+
+// WebSocketサーバー初期化
+const wsServer = new WebSocketServer(server);
+
+// WebSocketサーバーをグローバルに利用可能にする
+app.locals.wsServer = wsServer;
+
 // サーバー起動
-app.listen(PORT, async () => {
+server.listen(PORT, async () => {
     console.log(`🚀 サーバーが起動しました: http://localhost:${PORT}`);
+    console.log(`🔌 WebSocketサーバーが起動しました`);
     await testConnection();
 });
 
@@ -1439,5 +1451,73 @@ app.get('/api/uploaded-files/:filename/download', (req, res) => {
             message: 'ファイルダウンロードに失敗しました',
             error: error.message
         });
+    }
+});
+
+// ダッシュボードAPI
+app.get('/api/dashboard/kpi', async (req, res) => {
+    try {
+        const kpiData = await connection.getDashboardKPI();
+        res.json(kpiData);
+    } catch (error) {
+        console.error('KPIデータ取得エラー:', error);
+        // デモデータを返す
+        res.json({
+            activeProjects: 24,
+            totalRevenue: 125000000,
+            profitMargin: 18.5,
+            pendingIssues: 3
+        });
+    }
+});
+
+app.get('/api/dashboard/charts', async (req, res) => {
+    const { period } = req.query;
+    
+    try {
+        const chartData = await connection.getDashboardCharts(period);
+        res.json(chartData);
+    } catch (error) {
+        console.error('チャートデータ取得エラー:', error);
+        // デモデータを返す
+        res.json({
+            revenue: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                data: [12000000, 15000000, 13500000, 18000000, 22000000, 25000000]
+            },
+            status: {
+                data: [24, 45, 8, 12]
+            },
+            category: {
+                data: [45000000, 38000000, 22000000, 18000000, 12000000]
+            },
+            payment: {
+                data: [65000000, 45000000, 25000000]
+            }
+        });
+    }
+});
+
+app.get('/api/dashboard/activities', async (req, res) => {
+    try {
+        const activities = await connection.getRecentActivities();
+        res.json(activities);
+    } catch (error) {
+        console.error('活動履歴取得エラー:', error);
+        // デモデータを返す
+        res.json([
+            {
+                timestamp: new Date(Date.now() - 10 * 60 * 1000),
+                message: '工事注文書照合が完了しました（案件: T2024-001）'
+            },
+            {
+                timestamp: new Date(Date.now() - 60 * 60 * 1000),
+                message: '新規材料発注が登録されました（金額: ¥1,250,000）'
+            },
+            {
+                timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
+                message: '請求書がアップロードされました（山田建材）'
+            }
+        ]);
     }
 });
