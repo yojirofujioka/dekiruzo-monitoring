@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>現場監督業務監視システム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏗️ 現場監督業務監視システム</h1>
+            <div class="status-bar">
+                <span id="total-projects">案件数: 7件</span>
+                <span id="alert-count">要確認: 2件</span>
+                <span id="last-update">最終更新: 読み込み中...</span>
+            </div>
+        </header>
+
+        <!-- メインコンテンツエリア -->
+        <main>
+            <div id="verification-container">
+                <!-- タブシステムがここに動的生成される -->
+                <div class="loading-message">
+                    <h3>📡 システム初期化中...</h3>
+                    <p>データを読み込んでいます。しばらくお待ちください。</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- モーダル：詳細表示 -->
+        <div id="detail-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="modal-body"></div>
+            </div>
+        </div>
+
+        <!-- ローディング -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>データを処理中...</p>
+        </div>
+    </div>
+
+    <!-- スクリプト読み込み（順序重要） -->
+    <script>
+        console.log('🔧 HTMLファイル読み込み開始');
+        console.log('📍 現在のURL:', window.location.href);
+        console.log('🌐 ユーザーエージェント:', navigator.userAgent);
+    </script>
+    <script src="data.js"></script>
+    <script src="csv-parser.js"></script>
+    <script src="api-client.js"></script>
+    <script src="enhanced-verification.js"></script>
+    <script>
+        // 全スクリプト読み込み完了後の処理
+        window.addEventListener('load', () => {
+            console.log('🎉 全リソース読み込み完了');
+            console.log('📊 PROJECT_DATA:', typeof PROJECT_DATA !== 'undefined' ? PROJECT_DATA.length + '件' : '未定義');
+            console.log('🔧 dataManager:', typeof dataManager !== 'undefined' ? '利用可能' : '未定義');
+            console.log('⚙️ verificationSystem:', typeof window.verificationSystem !== 'undefined' ? '初期化済み' : '未初期化');
+        });
+    </script>
+</body>
+</html> 

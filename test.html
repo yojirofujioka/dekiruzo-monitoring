@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript テスト</title>
+</head>
+<body>
+    <h1>JavaScript 動作テスト</h1>
+    <button onclick="testFunction()">テストボタン</button>
+    <div id="test-result"></div>
+
+    <script>
+        console.log('🔧 テストスクリプト読み込み完了');
+        
+        function testFunction() {
+            console.log('🎯 テスト関数実行');
+            document.getElementById('test-result').innerHTML = '✅ JavaScript正常動作';
+        }
+        
+        // DOM読み込み完了テスト
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 DOM読み込み完了');
+            document.getElementById('test-result').innerHTML = '📄 DOM読み込み完了';
+        });
+    </script>
+</body>
+</html> 

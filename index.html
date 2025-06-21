@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>現場監督業務監視システム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏗️ 現場監督業務監視システム</h1>
+            <div class="status-bar">
+                <span id="total-projects">案件数: 0件</span>
+                <span id="alert-count">要確認: 0件</span>
+                <span id="last-update">最終更新: --</span>
+            </div>
+        </header>
+
+        <!-- メインコンテンツエリア -->
+        <main>
+            <div id="verification-container">
+                <!-- ここに新しいタブシステムが動的に生成されます -->
+            </div>
+        </main>
+
+        <!-- モーダル：詳細表示 -->
+        <div id="detail-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="modal-body"></div>
+            </div>
+        </div>
+
+        <!-- ローディング -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>データを処理中...</p>
+        </div>
+    </div>
+
+    <!-- スクリプト読み込み -->
+    <script src="data.js"></script>
+    <script src="csv-parser.js"></script>
+    <script src="api-client.js"></script>
+    <script src="enhanced-verification.js"></script>
+</body>
+</html> 
